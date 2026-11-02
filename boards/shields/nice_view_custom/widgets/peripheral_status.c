@@ -23,6 +23,36 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
+static lv_obj_t *key_label;
+
+const char* parse_hid_to_string(uint16_t keycode) {
+    if (keycode >= 0x04 && keycode <= 0x1D) {
+        static char letter[2] = {0, 0};
+        letter[0] = 'A' + (keycode - 0x04);
+        return letter;
+    }
+    switch(keycode) {
+        case 0x2C: return "SPC";
+        case 0x28: return "ENT";
+        case 0x2A: return "BCK";
+        case 0x2B: return "TAB";
+        default:   return "KEY";
+    }
+}
+
+int last_key_listener(const zmk_event_t *eh) {
+    struct zmk_keycode_state_changed *ev = as_zmk_keycode_state_changed(eh);
+    if (ev != NULL && ev->state) {
+        if (key_label != NULL) {
+            lv_label_set_text(key_label, parse_hid_to_string(ev->keycode));
+        }
+    }
+    return ZMK_EV_RET_HANDLED;
+}
+
+ZMK_LISTENER(widget_last_key, last_key_listener);
+ZMK_SUBSCRIPTION(widget_last_key, zmk_keycode_state_changed);
+
 LV_IMG_DECLARE(balloon);
 LV_IMG_DECLARE(mountain);
 
@@ -118,6 +148,10 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     bool random = sys_rand32_get() & 1;
     lv_img_set_src(art, random ? &balloon : &mountain);
     lv_obj_align(art, LV_ALIGN_TOP_LEFT, 0, 0);
+
+    key_label = lv_label_create(screen);
+    lv_label_set_text(key_label, "---");
+    lv_obj_align(key_label, LV_ALIGN_CENTER, 0, 0);
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
