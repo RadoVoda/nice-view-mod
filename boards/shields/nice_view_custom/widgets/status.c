@@ -354,7 +354,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
 
     key_label = lv_label_create(screen);
     lv_label_set_text(key_label, "---");
-    lv_obj_align(key_label, LV_ALIGN_CENTER, 0, 30); 
+    lv_obj_align(key_label, LV_ALIGN_CENTER, 0, 0);
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
