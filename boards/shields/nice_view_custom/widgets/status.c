@@ -352,7 +352,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, -44, 0);
     lv_canvas_set_buffer(bottom, widget->cbuf3, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
-    key_label = lv_label_create(screen);
+    key_label = lv_label_create(parent);
     lv_label_set_text(key_label, "---");
     lv_obj_align(key_label, LV_ALIGN_CENTER, 0, 0);
 
